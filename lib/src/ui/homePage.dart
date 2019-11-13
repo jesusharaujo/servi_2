@@ -13,8 +13,18 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Top List'),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Top List',
+          style: TextStyle(
+            color:Colors.black,
+          )
+        ),
       ),
     );
   }
+
+
+
+
 }

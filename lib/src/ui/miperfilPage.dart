@@ -13,7 +13,13 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Mi Perfil'),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Mi perfil',
+          style: TextStyle(
+            color:Colors.black,
+          )
+        ),
       ),
     );
   }

@@ -9,9 +9,15 @@ class BuscadorPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Buscar'),
+        backgroundColor: Colors.white,
+        title: Text(
+          'Buscar',
+          style: TextStyle(
+            color: Colors.black
+          ),
+        ),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.search), onPressed: (){
+          IconButton(icon: Icon(Icons.search, color: Colors.black), onPressed: (){
             showSearch(context: context, delegate: DataSearch());
           })
         ],

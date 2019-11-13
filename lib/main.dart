@@ -5,71 +5,78 @@ import 'package:servi_2/src/ui/buscadorPage.dart';
 
 void main() => runApp(MyApp());
  
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   @override
-    State<StatefulWidget> createState() {
-      return MyAppState();
-    }
-}
-
-class MyAppState extends State<MyApp>{
-
-int _currentIndex = 0;
-
-Widget callPage(int currentIndex){
-    switch(currentIndex){
-      case 0: return HomePage();
-      case 1: return BuscadorPage();
-      case 2: return MiPerfilPage();
-        break;
-      default: return HomePage();
-    }
-  }
-
-@override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Material App',
-      home: Scaffold(
-        
-        body: callPage(_currentIndex),
+      // title: 'Servi App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
+  }
+}
 
-        bottomNavigationBar: BottomNavigationBar(
-          fixedColor: Colors.blue,
-          currentIndex:_currentIndex,
-          onTap: (value){
-              _currentIndex = value;
-              setState(() {
-                
-              });
-          },
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              title: Text('Home')
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+ 
+  List<Widget> pages = [
+    HomePage(),
+    BuscadorPage(),
+    MiPerfilPage()
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3,
+      initialIndex: 0,
+      child: Scaffold(
+        // appBar: AppBar(
+        //   backgroundColor: Colors.white,
+        //   textTheme: TextTheme(
+        //     title: TextStyle(color: Colors.black, fontSize: 20.0, fontStyle: FontStyle.normal),
+        //   ), 
+        //   centerTitle: true,
+        //   title: Text(
+        //     'Servi App',
+        //     style: TextStyle(
+        //       color: Colors.black
+        //     )
+        //   ),
+        // ),
+        body: TabBarView(
+          children: pages,
+        ),
+        bottomNavigationBar: TabBar(
+          tabs: <Widget>[
+            Tab(
+              icon: Icon(Icons.home)
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.search),
-              title: Text('Buscador')
+            Tab(
+              icon: Icon(Icons.search)
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              title: Text('Mi Perfil')
+            Tab(
+              icon: Icon(Icons.person)
             ),
-            // BottomNavigationBarItem(
-            //   icon: Icon(Icons.person),
-            //   title: Text('Mi perfil')
-            // )
           ],
+          unselectedLabelColor: Colors.black,
+          labelColor: Colors.blue,
+          indicatorColor: Colors.transparent,
         ),
       ),
-      routes: <String, WidgetBuilder>{
-        "/home" : (BuildContext context) => HomePage(),
-        "/buscador" : (BuildContext context) => BuscadorPage(),
-        "/miperfil" : (BuildContext context) => MiPerfilPage(),
-      },
     );
   }
 
+
+
+
+
 }
+
