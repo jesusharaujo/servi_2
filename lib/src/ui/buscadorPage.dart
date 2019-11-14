@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servi_2/src/services/busquedaServicio.dart';
 
 class BuscadorPage extends StatelessWidget {
 
@@ -22,42 +21,42 @@ class BuscadorPage extends StatelessWidget {
           })
         ],
       ),
-      // drawer: Drawer(),
+      body: Container(
+        padding: EdgeInsets.only(top:15.0),
+        child: _listaServicios(),
+      ),
     );
   }
 }
 
+Widget _listaServicios() {
+
+  return StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('servicios').snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError)
+              return new Text('Error: ${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting: return new CircularProgressIndicator();
+              default:
+                return new ListView(
+                  children : snapshot.data.documents.map((DocumentSnapshot document) {
+                    return new ListTile(
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
+                      leading: Image.network(document['foto_servicio']),
+                      title: new Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
+                      subtitle: new Text(document['descripcion']),
+                      trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                    );
+                  }).toList(),
+                );
+            }
+          },
+        );
+}
+
 
 class DataSearch extends SearchDelegate<String>{
-
-  final services = [
-    "Plomero",
-    "Programador",
-    "Cerrajero",
-    "Electricista",
-    "Pintor",
-    "Albañil",
-    "Mecánico",
-    "Cocinero",
-    "Arquitecto",
-    "Agua",
-    "Tubos",
-    "Llave",
-    "Computadora",
-    "Laptop",
-    "Casa",
-    "Carro",
-    "Motor",
-    "Construcción",
-    "Luz",
-    "Negocio",
-    "Apagador",
-  ];
-
-  final recentServices = [
-    "Plomero",
-    "Programador",
-  ];
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -86,7 +85,7 @@ class DataSearch extends SearchDelegate<String>{
   
   @override
   Widget buildResults(BuildContext context) {
-    //muestra los resultados basados en la seleccion
+    //CREA LOS RESULTADOS QUE VAMOS A MOSTRAR
     return Center(
       child: Container(
       height: 100.0,
@@ -105,31 +104,31 @@ class DataSearch extends SearchDelegate<String>{
   @override
   Widget buildSuggestions(BuildContext context) {
     //muestra cuando encuentra algo
-    final suggestionList = query.isEmpty 
-        ? recentServices 
-        : services.where((p)=>p.startsWith(query)).toList();
 
-    return ListView.builder(
-      itemBuilder: (context,index)=> ListTile(
-        onTap: (){
-          showResults(context);
-        },
-          leading: Icon(Icons.pie_chart),
-          title: RichText(
-            text: TextSpan(
-              text: suggestionList[index].substring(0,query.length),
-              style: 
-                TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              children: [
-                TextSpan(
-                  text: suggestionList[index].substring(query.length),
-                  style: TextStyle(color: Colors.grey)
-              )]
-            )
-          ),
-      ),
-      itemCount: suggestionList.length,
-    );
+    return StreamBuilder<QuerySnapshot>(
+          stream: Firestore.instance.collection('servicios').where('claves', arrayContains: query.toLowerCase()).snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasError)
+              return new Text('Error: ${snapshot.error}');
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting: return new Center(child: CircularProgressIndicator());
+              default:
+                return new ListView(
+                  children : snapshot.data.documents.map((DocumentSnapshot document) {
+                    var _total = document['cantidad'];
+                    var _nombre = document['nombre'];
+                    return new ListTile(
+                      contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
+                      leading: Image.network(document['foto_servicio']),
+                      title: new Text('$_nombre', style: TextStyle(fontSize: 20.0)),
+                      subtitle: new Text('$_total $_nombre en total'),
+                      trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+                    );
+                  }).toList(),
+                );
+            }
+          },
+        );
   }
 
   
