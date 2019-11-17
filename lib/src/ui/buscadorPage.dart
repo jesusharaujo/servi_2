@@ -130,7 +130,4 @@ class DataSearch extends SearchDelegate<String>{
           },
         );
   }
-
-  
-
 }
