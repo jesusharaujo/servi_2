@@ -219,7 +219,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                             FadeInImage(
                               image: NetworkImage(document['publicaciones'][i]['post']),
                               placeholder: AssetImage('lib/src/assets/loader.gif'),
-                              fadeInDuration: Duration(seconds: 1),
+                              fadeInDuration: Duration(milliseconds: 150),
                               width: 400.0,
                               height: 350.0,
                               fit: BoxFit.cover,

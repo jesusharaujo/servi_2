@@ -113,7 +113,6 @@ class DataSearch extends SearchDelegate<String>{
   @override
   Widget buildSuggestions(BuildContext context) {
     //muestra cuando encuentra algo
-
     return StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('servicios').where('claves', arrayContains: query.toLowerCase()).snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -124,9 +123,18 @@ class DataSearch extends SearchDelegate<String>{
               default:
                 return new ListView(
                   children : snapshot.data.documents.map((DocumentSnapshot document) {
+                    String _nombreServicio = document['nombre'];
                     var _total = document['cantidad'];
                     var _nombre = document['nombre'];
                     return new ListTile(
+                      onTap: (){
+                        final route = MaterialPageRoute(
+                          builder: (BuildContext context){
+                            return ListaContratistasPage(value: _nombreServicio);
+                          } ,
+                        );
+                        Navigator.push(context, route);
+                      },
                       contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
                       leading: Image.network(document['foto_servicio']),
                       title: new Text('$_nombre', style: TextStyle(fontSize: 20.0)),
