@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servi_2/src/services/getPerfil.dart';
+import 'package:servi_2/src/pages/getPerfilPage.dart';
 
 class ListaContratistasPage extends StatefulWidget {
   //RECIBIR EL VALOR DE _NOMBRESERVICIO DE BUSCADORPAGE.
@@ -57,9 +57,11 @@ Widget _listaContratistas() {
                         Navigator.push(context, route);
                       },
                       contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
-                      leading: Image.network(document['img_perfil']),
-                      title: new Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
-                      subtitle: new Text(document['username']),
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(document['img_perfil']),
+                      ),
+                      title: new Text(document['nombre'] + ' ( Estrellas: ' + document['stars'].toString() + ' )', style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
+                      subtitle: new Text(document['direccion']['ciudad'] + ' | ' + document['total_servicios'].toString() +' Servicios'),
                       trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
                     );
                   }).toList(),

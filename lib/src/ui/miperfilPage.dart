@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:servi_2/src/pages/addNuevoServicioPage.dart';
 
 class MiPerfilPage extends StatefulWidget {
   MiPerfilPage({Key key}) : super(key: key);
@@ -282,6 +283,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
           default:
             return new Column(
               children: snapshot.data.documents.map((DocumentSnapshot document) {
+                String _userName = document['username'];
                 return Column(
                   children: <Widget>[
                     SizedBox(
@@ -295,6 +297,14 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                     ),
                     Divider(),
                     ListTile(
+                      onTap: (){
+                        final route = MaterialPageRoute(
+                          builder: (BuildContext context){
+                            return AddNuevoServicioPage(username: _userName);
+                          } ,
+                        );
+                        Navigator.push(context, route);
+                      },
                       leading: Icon(Icons.monetization_on, color: Colors.green),
                       title: Text('Prestar un nuevo servicio', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
                     ),
