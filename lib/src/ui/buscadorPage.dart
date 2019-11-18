@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:servi_2/src/services/listaContratistas.dart';
 
 class BuscadorPage extends StatelessWidget {
 
@@ -30,7 +31,7 @@ class BuscadorPage extends StatelessWidget {
 }
 
 Widget _listaServicios() {
-
+  
   return StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('servicios').snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -41,7 +42,16 @@ Widget _listaServicios() {
               default:
                 return new ListView(
                   children : snapshot.data.documents.map((DocumentSnapshot document) {
+                    String _nombreServicio = document['nombre'];
                     return new ListTile(
+                      onTap: (){
+                        final route = MaterialPageRoute(
+                          builder: (BuildContext context){
+                            return ListaContratistasPage(value: _nombreServicio);
+                          } ,
+                        );
+                        Navigator.push(context, route);
+                      },
                       contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
                       leading: Image.network(document['foto_servicio']),
                       title: new Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
@@ -54,7 +64,6 @@ Widget _listaServicios() {
           },
         );
 }
-
 
 class DataSearch extends SearchDelegate<String>{
 
@@ -130,4 +139,7 @@ class DataSearch extends SearchDelegate<String>{
           },
         );
   }
+
+
+
 }

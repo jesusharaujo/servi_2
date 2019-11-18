@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 // FUNCIÓN QUE REGRESA TODOS LOS POSTS
 Widget _getPosts(){
   return StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('posts').snapshots(),
+          stream: Firestore.instance.collection('recent_posts').snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError)
               return new Text('Error: ${snapshot.error}');
@@ -40,25 +40,74 @@ Widget _getPosts(){
               default:
                 return new ListView(
                   children: snapshot.data.documents.map((DocumentSnapshot document) {
-                    return Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Container(
-                                padding: EdgeInsets.all(10.0),
-                                child: CircleAvatar(
-                                  radius: 20.0,
-                                  backgroundImage: NetworkImage(document['img_usuario']),
+                    final _fecha = document['fecha'].toDate();
+                    return Container(
+                      padding: EdgeInsets.only(bottom: 20.0),
+                      child: Card(
+                        elevation: 8.0,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Container(
+                                  padding: EdgeInsets.all(7.0),
+                                  child: CircleAvatar(
+                                    radius: 15.0,
+                                    backgroundImage: NetworkImage(document['img_usuario']),
+                                    )
                                 ),
-                              ),
-                              Text(document['usuario'], style: TextStyle(fontSize: 20.0)),
-                            ],
-                          ),
-                          Image(
-                            image: NetworkImage(document['img_post']),
-                          )
-                        ],
-                      );
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      child: Text(document['username_post'], style: TextStyle(fontWeight: FontWeight.bold),),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.all(1.0),
+                                      child: Text(document['ciudad_user'],style: TextStyle(fontSize: 10.0),),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                            FadeInImage(
+                              image: NetworkImage(document['img_post']),
+                              placeholder: AssetImage('lib/src/assets/loader.gif'),
+                              fadeInDuration: Duration(seconds: 1),
+                              width: 400.0,
+                              height: 350.0,
+                              fit: BoxFit.cover,
+                            ),
+                            
+                            Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
+                                      child: Text(document['stars'].toString(),style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 15.0),),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
+                                      child: Text("Estrellas",style: TextStyle(fontSize: 15.0),),
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(left: 100.0,bottom: 10.0,top: 10.0),
+                                      child: Text("Fecha: ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.0))
+                                    ),
+                                    Container(
+                                      padding: EdgeInsets.only(left: 3.0,bottom: 10.0,top: 10.0),
+                                      child: Text("$_fecha")
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          ],
+                        ),
+                      ),
+                    );
                   }).toList(),
                 );
             }

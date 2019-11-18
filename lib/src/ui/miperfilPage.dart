@@ -33,7 +33,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
     );
   }
 
-
+  //FUNCION QUE CARGA LOS DATOS DEL USUARIO
   Widget _getStats() {
 
     return StreamBuilder<QuerySnapshot>(
@@ -113,9 +113,8 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       );
   }
 
-
+  //FUNCIÓN QUE CARGA LOS DATOS PERSONALES DEL USUARIO
   Widget _getDatosPerfil() {
-
     return StreamBuilder<QuerySnapshot>(
         stream: Firestore.instance.collection('usuarios').snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -168,6 +167,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       );
   }
 
+  //FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
   Widget _getPostsPerfil(){
 
       return StreamBuilder<QuerySnapshot>(
