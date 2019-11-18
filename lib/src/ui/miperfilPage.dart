@@ -16,12 +16,18 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.white,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
         title: Text(
           'Mi perfil',
           style: TextStyle(
             color:Colors.black,
           )
         ),
+      ),
+      endDrawer: Drawer(
+        child: _getEndDrawer(),
       ),
       body: ListView(
         children: <Widget>[
@@ -265,5 +271,51 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
     );
   }
 
-
+  Widget _getEndDrawer() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('usuarios').snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError)
+          return new Text('Error: ${snapshot.error}');
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting: return Center(child: CircularProgressIndicator());
+          default:
+            return new Column(
+              children: snapshot.data.documents.map((DocumentSnapshot document) {
+                return Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 30.0,
+                    ),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(document['img_perfil']),
+                      ),
+                      title: Text(document['username'], style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
+                    ),
+                    Divider(),
+                    ListTile(
+                      leading: Icon(Icons.monetization_on, color: Colors.green),
+                      title: Text('Prestar un nuevo servicio', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.history, color: Colors.blue),
+                      title: Text('Historial de servicios', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.settings, color: Colors.grey),
+                      title: Text('Administrar mis servicios', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.exit_to_app, color: Colors.red),
+                      title: Text('Cerrar sesión', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
+                    ),
+                  ],
+                );
+              }).toList(),
+            );
+        }
+      },
+    );
+  }
 }
