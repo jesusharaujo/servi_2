@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servi_2/src/pages/addNuevoServicioPage2.dart';
+import 'package:servi_2/src/pages/addNuevoServicioPage.dart';
 
-class AddNuevoServicioPage extends StatefulWidget {
-  final String value;
+class AddNuevoServicioPage2 extends StatefulWidget {
+  final String servicioName;
+  final String userName;
 
-  AddNuevoServicioPage({Key key, this.value}) : super(key: key);
+  AddNuevoServicioPage2({Key key,this.servicioName ,this.userName}) : super(key: key);
 
   @override
-  _AddNuevoServicioPageState createState() => _AddNuevoServicioPageState();
+  _AddNuevoServicioPage2State createState() => _AddNuevoServicioPage2State();
 }
 
-class _AddNuevoServicioPageState extends State<AddNuevoServicioPage> {
+class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,17 +32,17 @@ class _AddNuevoServicioPageState extends State<AddNuevoServicioPage> {
       body: ListView(
         children: <Widget>[
           _getServiciosPerfil(),
-          _getListaServicios(),
+          _getServicioSeleccionado(),
         ],
       )
     );
   } 
 
-Widget _getServiciosPerfil() {
+  Widget _getServiciosPerfil() {
     return Container(
       padding: EdgeInsets.only(top:20.0),
       child: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.value).snapshots(),
+        stream: Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.userName).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError)
             return new Text('Error: ${snapshot.error}');
@@ -84,7 +85,7 @@ Widget _getServiciosPerfil() {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Icon(Icons.chevron_right, color: Colors.green, size: 30.0),
-                            Text('Selecciona un servicio', style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w300)),
+                            Text('Confirma tu selección', style: TextStyle(fontSize: 25.0, fontWeight: FontWeight.w300)),
                             Icon(Icons.chevron_left, color: Colors.green, size: 30.0),
                           ],
                         ),
@@ -99,9 +100,9 @@ Widget _getServiciosPerfil() {
     );
   }
 
-Widget _getListaServicios(){
+  Widget _getServicioSeleccionado(){
   return StreamBuilder<QuerySnapshot>(
-    stream: Firestore.instance.collection('servicios').snapshots(),
+    stream: Firestore.instance.collection('servicios').where('nombre', isEqualTo: widget.servicioName).snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
       if (snapshot.hasError)
         return new Text('Error: ${snapshot.error}');
@@ -110,43 +111,63 @@ Widget _getListaServicios(){
         default:
           return new Column(
             children : snapshot.data.documents.map((DocumentSnapshot document) {
-              String _servicioName = document['nombre'];
-              String _userName = widget.value;
-              return Card(
-                elevation: 5.0,
-                child: Container(
-                  margin: EdgeInsets.all(20.0),
-                  child: Column(
+              return Column(
+                children: <Widget>[
+                  Card(
+                    elevation: 5.0,
+                    child: Container(
+                      margin: EdgeInsets.all(20.0),
+                      child: Column(
+                        children: <Widget>[
+                          ListTile(
+                            leading: Image(image: NetworkImage(document['foto_servicio']),fit: BoxFit.cover),
+                            title: Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
+                            subtitle: Text(document['descripcion']),
+                            trailing: Column(
+                              children: <Widget>[
+                                Icon(Icons.playlist_add_check, color: Colors.green, size: 30.0),
+                                Text('Selecionado', style: TextStyle(fontSize: 20.0, color: Colors.green))
+                              ],
+                            )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 50.0,),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      ListTile(
-                        onTap: (){
-                          final route = MaterialPageRoute(
-                            builder: (BuildContext context){
-                              return AddNuevoServicioPage2(servicioName: _servicioName, userName: _userName);
-                            } ,
-                          );
-                          Navigator.push(context, route);
+                      FlatButton(
+                        textColor: Colors.red,
+                        onPressed: (){
+                          Navigator.of(context).pop();
                         },
-                        leading: Image(image: NetworkImage(document['foto_servicio']),fit: BoxFit.cover),
-                        title: Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
-                        subtitle: Text(document['descripcion']),
-                        trailing: Column(
-                          children: <Widget>[
-                            Icon(Icons.add, color: Colors.green, size: 30.0),
-                            Text('Agregar', style: TextStyle(fontSize: 20.0, color: Colors.green))
-                          ],
-                        )
+                        child: Text("Cancelar",style: TextStyle(fontSize: 20))
+                      ),
+                      SizedBox(width: 20.0),
+                      RaisedButton(
+                        onPressed: () {
+                          Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.userName).getDocuments();
+                          Firestore.instance.collection('usuarios').document()
+                          .setData({ 'servicios': widget.servicioName});
+                        },
+                        textColor: Colors.white,
+                        color: Colors.green,
+                        child: Container(
+                          padding: const EdgeInsets.all(10.0),
+                          child: const Text('Confirmar',style: TextStyle(fontSize: 20)),
+                        ),
                       ),
                     ],
                   ),
-                ),
-              );  
+                ],
+              );
             }).toList(),
           );
       }
     },
   );
 }
-
 
 }

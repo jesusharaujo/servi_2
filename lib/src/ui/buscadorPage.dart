@@ -33,36 +33,36 @@ class BuscadorPage extends StatelessWidget {
 Widget _listaServicios() {
   
   return StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('servicios').snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.hasError)
-              return new Text('Error: ${snapshot.error}');
-            switch (snapshot.connectionState) {
-              case ConnectionState.waiting: return new CircularProgressIndicator();
-              default:
-                return new ListView(
-                  children : snapshot.data.documents.map((DocumentSnapshot document) {
-                    String _nombreServicio = document['nombre'];
-                    return new ListTile(
-                      onTap: (){
-                        final route = MaterialPageRoute(
-                          builder: (BuildContext context){
-                            return ListaContratistasPage(value: _nombreServicio);
-                          } ,
-                        );
-                        Navigator.push(context, route);
-                      },
-                      contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
-                      leading: Image.network(document['foto_servicio']),
-                      title: new Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
-                      subtitle: new Text(document['descripcion']),
-                      trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
-                    );
-                  }).toList(),
-                );
-            }
-          },
-        );
+    stream: Firestore.instance.collection('servicios').snapshots(),
+    builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+      if (snapshot.hasError)
+        return new Text('Error: ${snapshot.error}');
+      switch (snapshot.connectionState) {
+        case ConnectionState.waiting: return new CircularProgressIndicator();
+        default:
+          return new ListView(
+            children : snapshot.data.documents.map((DocumentSnapshot document) {
+              String _nombreServicio = document['nombre'];
+              return new ListTile(
+                onTap: (){
+                  final route = MaterialPageRoute(
+                    builder: (BuildContext context){
+                      return ListaContratistasPage(value: _nombreServicio);
+                    } ,
+                  );
+                  Navigator.push(context, route);
+                },
+                contentPadding: EdgeInsets.symmetric(vertical: 10.0,horizontal: 20.0),
+                leading: Image.network(document['foto_servicio']),
+                title: new Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
+                subtitle: new Text(document['descripcion']),
+                trailing: Icon(Icons.arrow_forward_ios, color: Colors.blue,),
+              );
+            }).toList(),
+          );
+        }
+      },
+  );
 }
 
 class DataSearch extends SearchDelegate<String>{

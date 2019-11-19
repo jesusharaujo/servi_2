@@ -137,15 +137,21 @@ Widget _getDatosPerfil() {
 
               // CICLO PARA IMPRIMIR LOS SERVICIOS QUE TIENE DISPONIBLES EL USUARIO
               String _servicios = ""; // VARIABLE QUE CONTIENE EL STRING CON LOS SERVICIOS QUE SE SACARÁN DEL ARRAY
-              for (var i = 0; i < document['servicios'].length; i++) {
-                if((i+1) == document['servicios'].length){
-                  _servicios = _servicios + " y " + document['servicios'][i] + ".";
-                }else if((i+2) == document['servicios'].length){
-                  _servicios = _servicios + document['servicios'][i] ;
-                }else{
-                  _servicios = _servicios + document['servicios'][i] + ", ";
+              if (document['servicios'].length == 0){
+                _servicios = "Aún no presta ningún servicio...";
+              }else if(document['servicios'].length == 1){
+                _servicios = document['servicios'][0] + '.'; 
+              }
+              else{
+                for (var i = 0; i < document['servicios'].length; i++) {
+                  if((i+1) == document['servicios'].length){
+                    _servicios = _servicios + " y " + document['servicios'][i] + ".";
+                  }else if((i+2) == document['servicios'].length){
+                    _servicios = _servicios + document['servicios'][i] ;
+                  }else{
+                    _servicios = _servicios + document['servicios'][i] + ", ";
+                  }
                 }
-                
               }
               return Column(
                   children: <Widget>[
@@ -156,7 +162,7 @@ Widget _getDatosPerfil() {
                         children: <Widget>[
                           Text(document['nombre'].toString(), style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
                           Text(document['direccion']['ciudad'].toString()),
-                          Text('Servicios: $_servicios'),
+                          Container(constraints: BoxConstraints(maxWidth: 350.0),child:Text('Servicios: $_servicios', )),
                           Text("Email: $_email", style: TextStyle(fontSize: 14.0)),
                           Text("Teléfono: $_telefono", style: TextStyle(fontSize: 14.0)),
                         ],

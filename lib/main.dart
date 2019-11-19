@@ -10,7 +10,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // title: 'Servi App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -38,19 +37,6 @@ class _MyHomePageState extends State<MyHomePage> {
       length: 3,
       initialIndex: 0,
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   textTheme: TextTheme(
-        //     title: TextStyle(color: Colors.black, fontSize: 20.0, fontStyle: FontStyle.normal),
-        //   ), 
-        //   centerTitle: true,
-        //   title: Text(
-        //     'Servi App',
-        //     style: TextStyle(
-        //       color: Colors.black
-        //     )
-        //   ),
-        // ),
         body: TabBarView(
           children: pages,
         ),
