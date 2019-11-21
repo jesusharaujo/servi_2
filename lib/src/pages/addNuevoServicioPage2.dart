@@ -148,9 +148,6 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
                       SizedBox(width: 20.0),
                       RaisedButton(
                         onPressed: () {
-                          Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.userName).getDocuments();
-                          Firestore.instance.collection('usuarios').document()
-                          .setData({ 'servicios': widget.servicioName});
                         },
                         textColor: Colors.white,
                         color: Colors.green,
