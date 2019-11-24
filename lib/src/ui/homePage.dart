@@ -31,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 // FUNCIÓN QUE REGRESA TODOS LOS POSTS
 Widget _getPosts(){
   return StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('recent_posts').snapshots(),
+          stream: Firestore.instance.collection('posts').snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError)
               return new Text('Error: ${snapshot.error}');
@@ -54,7 +54,7 @@ Widget _getPosts(){
                                   padding: EdgeInsets.all(7.0),
                                   child: CircleAvatar(
                                     radius: 15.0,
-                                    backgroundImage: NetworkImage(document['img_usuario']),
+                                    backgroundImage: NetworkImage(document['img_user']),
                                     )
                                 ),
                                 Column(

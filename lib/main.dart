@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:servi_2/src/pages/logingPage.dart';
 import 'package:servi_2/src/ui/homePage.dart';
 import 'package:servi_2/src/ui/miperfilPage.dart';
 import 'package:servi_2/src/ui/buscadorPage.dart';
@@ -13,7 +14,10 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(),
+      home: LoginPage(),
+      routes: {
+        '/homepage': (context) => HomePage(),
+      }
     );
   }
 }
