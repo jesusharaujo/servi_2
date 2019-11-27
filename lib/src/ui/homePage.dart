@@ -1,14 +1,48 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  final String name, email, idfb, foto;
+  final FacebookLogin login;
+  HomePage({Key key, this.name, this.email, this.idfb, this.foto, this.login}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final login = FacebookLogin();
+
+  Future<bool> _onBackPressed(){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('¿Estás seguro?'),
+          content: Text('Usted saldrá de la aplicación'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('No'),
+              onPressed: (){
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: Text('Sí'),
+              onPressed: (){
+                login.logOut();
+                Navigator.of(context).pop(true);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,11 +56,12 @@ class _HomePageState extends State<HomePage> {
           )
         ),
       ),
-      body: _getPosts()
+      body: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: _getPosts(),
+      ),
     );
   }
-
-
 
 // FUNCIÓN QUE REGRESA TODOS LOS POSTS
 Widget _getPosts(){

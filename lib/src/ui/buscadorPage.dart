@@ -1,8 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/src/pages/listaContratistasPage.dart';
 
-class BuscadorPage extends StatelessWidget {
+class BuscadorPage extends StatefulWidget {
+  @override
+  _BuscadorPageState createState() => _BuscadorPageState();
+}
+
+class _BuscadorPageState extends State<BuscadorPage> {
+  final login = FacebookLogin();
+
+  Future<bool> _onBackPressed(){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('¿Estás seguro?'),
+          content: Text('Usted saldrá de la aplicación'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('No'),
+              onPressed: (){
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: Text('Sí'),
+              onPressed: (){
+                login.logOut();
+                Navigator.of(context).pop(true);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +56,13 @@ class BuscadorPage extends StatelessWidget {
           })
         ],
       ),
-      body: Container(
-        padding: EdgeInsets.only(top:15.0),
-        child: _listaServicios(),
-      ),
+      body: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: Container(
+          padding: EdgeInsets.only(top:15.0),
+          child: _listaServicios(),
+        ),
+      )
     );
   }
 }

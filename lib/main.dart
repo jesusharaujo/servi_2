@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/src/pages/logingPage.dart';
 import 'package:servi_2/src/ui/homePage.dart';
 import 'package:servi_2/src/ui/miperfilPage.dart';
@@ -15,20 +16,19 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: LoginPage(),
-      routes: {
-        '/homepage': (context) => HomePage(),
-      }
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
+  final String name, email, idfb, foto;
+  final FacebookLogin login;
+  MyHomePage({Key key, this.name, this.email, this.idfb, this.foto, this.login}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
- 
   List<Widget> pages = [
     HomePage(),
     BuscadorPage(),
@@ -37,6 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.login);
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -63,10 +64,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-
-
-
-
-
 }
 

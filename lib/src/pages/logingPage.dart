@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:servi_2/src/pages/welcomePage.dart';
+import 'package:servi_2/src/ui/homePage.dart';
+
+import '../../main.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -14,8 +19,9 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
 
+//VARIABLES QUE CONTENDRÁN LA INFORMACIÓN OBTENIDA DEL USUARIO
+String username, auxusername, name, email, idfb, foto;  
 final login = FacebookLogin();
-final FirebaseAuth _auth = FirebaseAuth.instance;
 bool _isLoggedIn = false; 
 Map userProfile;
 
@@ -45,7 +51,28 @@ void initiateFacebookLogin() async {
       ).user;
       onLoginStatusChange();
       getUserInfo(result);
-      break;
+
+      final newUser = Firestore.instance.collection('usuarios').where('idfb',isEqualTo: idfb).snapshots();
+
+      if(foto == null){
+        initiateFacebookLogin();
+      }else{
+        if(newUser == null){ //SI ES NULO, QUIERE DECIR QUE ES UN NUEVO USUARIO, Y HAY QUE PROCEDER A REGISTRARLO
+          final route = MaterialPageRoute(
+                    builder: (BuildContext context){
+                      return WelcomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
+                    }); 
+          Navigator.push(context, route);
+          break;
+        }else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
+          final route = MaterialPageRoute(
+                        builder: (BuildContext context){
+                          return MyHomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
+                        }); 
+          Navigator.push(context, route);
+          break;
+        }
+      }
     }
   
 }
@@ -56,19 +83,17 @@ void onLoginStatusChange(){
   });
 }
 
-void cerrarSesion(){
-  login.logOut();
-  setState(() {
-    _isLoggedIn = false;
-  });
-}
-
 void getUserInfo(FacebookLoginResult result) async{
   final token = result.accessToken.token;
   final graphResponse = await http.get(
               'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture&access_token=$token');
   final profile = JSON.jsonDecode(graphResponse.body);
   userProfile = profile;
+
+  name =  userProfile['name'];
+  email = userProfile['email'];
+  idfb = userProfile['id'];
+  foto = userProfile['picture']['data']['url'];
 }
 
   @override
@@ -77,9 +102,7 @@ void getUserInfo(FacebookLoginResult result) async{
       // appBar: AppBar(
       //   title: Text('Login Page'),
       // ),
-      body: _isLoggedIn 
-      ? Column(children: <Widget>[Text(userProfile['id']), FlatButton(child: Text('cerrar sesión'), onPressed: ()=>cerrarSesion(),)])
-      : Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           Image.asset('lib/src/assets/logo.png'),

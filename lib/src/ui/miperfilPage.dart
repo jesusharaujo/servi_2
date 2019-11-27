@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/src/pages/addNuevoServicioPage.dart';
+import 'package:servi_2/src/pages/logingPage.dart';
 
 class MiPerfilPage extends StatefulWidget {
+  
   MiPerfilPage({Key key}) : super(key: key);
 
   @override
@@ -10,7 +13,34 @@ class MiPerfilPage extends StatefulWidget {
 }
 
 class _MiPerfilPageState extends State<MiPerfilPage> {
+  final login = FacebookLogin();
 
+  Future<bool> _onBackPressed(){
+    return showDialog(
+      context: context,
+      builder: (BuildContext context){
+        return AlertDialog(
+          title: Text('¿Estás seguro?'),
+          content: Text('Usted saldrá de la aplicación'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('No'),
+              onPressed: (){
+                Navigator.of(context).pop(false);
+              },
+            ),
+            FlatButton(
+              child: Text('Sí'),
+              onPressed: (){
+                login.logOut();
+                Navigator.of(context).pop(true);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,13 +60,16 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       endDrawer: Drawer(
         child: _getEndDrawer(),
       ),
-      body: ListView(
-        children: <Widget>[
-          _getStats(),
-          _getDatosPerfil(),
-          _getPostsPerfil(),
-        ],
-      ),
+      body: WillPopScope(
+        onWillPop: _onBackPressed,
+        child: ListView(
+          children: <Widget>[
+            _getStats(),
+            _getDatosPerfil(),
+            _getPostsPerfil(),
+          ],
+        ),
+      )
     );
   }
 
@@ -324,6 +357,11 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                       title: Text('Administrar mis servicios', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
                     ),
                     ListTile(
+                      onTap: (){
+                        login.logOut();
+                        Route route = MaterialPageRoute(builder: (context) => LoginPage());
+                        Navigator.pushReplacement(context, route);
+                      },
                       leading: Icon(Icons.exit_to_app, color: Colors.red),
                       title: Text('Cerrar sesión', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
                     ),
