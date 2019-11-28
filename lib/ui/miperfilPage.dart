@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:servi_2/src/pages/addNuevoServicioPage.dart';
-import 'package:servi_2/src/pages/logingPage.dart';
+import 'package:servi_2/pages/addNuevoServicioPage.dart';
+import 'package:servi_2/pages/logingPage.dart';
 
 class MiPerfilPage extends StatefulWidget {
   

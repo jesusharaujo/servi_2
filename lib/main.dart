@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:servi_2/src/pages/logingPage.dart';
-import 'package:servi_2/src/ui/homePage.dart';
-import 'package:servi_2/src/ui/miperfilPage.dart';
-import 'package:servi_2/src/ui/buscadorPage.dart';
+import 'package:servi_2/pages/logingPage.dart';
+import 'package:servi_2/ui/homePage.dart';
+import 'package:servi_2/ui/miperfilPage.dart';
+import 'package:servi_2/ui/buscadorPage.dart';
 
 void main() => runApp(MyApp());
  
@@ -37,7 +37,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.login);
     return DefaultTabController(
       length: 3,
       initialIndex: 0,

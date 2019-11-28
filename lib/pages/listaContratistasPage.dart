@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servi_2/src/pages/getPerfilPage.dart';
+import 'package:servi_2/pages/getPerfilPage.dart';
 
 class ListaContratistasPage extends StatefulWidget {
   //RECIBIR EL VALOR DE _NOMBRESERVICIO DE BUSCADORPAGE.

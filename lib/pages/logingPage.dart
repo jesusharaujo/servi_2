@@ -5,10 +5,8 @@ import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as JSON;
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:servi_2/src/pages/welcomePage.dart';
-import 'package:servi_2/src/ui/homePage.dart';
-
-import '../../main.dart';
+import 'package:servi_2/pages/welcomePage.dart';
+import '../main.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key key}) : super(key: key);
@@ -23,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
 String username, auxusername, name, email, idfb, foto;  
 final login = FacebookLogin();
 bool _isLoggedIn = false; 
+bool newUser = true;
 Map userProfile;
 
 void initiateFacebookLogin() async {
@@ -51,13 +50,24 @@ void initiateFacebookLogin() async {
       ).user;
       onLoginStatusChange();
       getUserInfo(result);
+      print(idfb);
 
-      final newUser = Firestore.instance.collection('usuarios').where('idfb',isEqualTo: idfb).snapshots();
+      Firestore.instance
+          .collection('usuarios')
+          .where('idfb',isEqualTo: idfb)
+          .getDocuments()
+          .then((QuerySnapshot docs){
+            if(docs.documents.isNotEmpty){
+              newUser= false;
+            }
+          });
+
+      print(newUser);
 
       if(foto == null){
         initiateFacebookLogin();
       }else{
-        if(newUser == null){ //SI ES NULO, QUIERE DECIR QUE ES UN NUEVO USUARIO, Y HAY QUE PROCEDER A REGISTRARLO
+        if(newUser == true){ //SI ES VERDADERO, INICIA PÁGINA DE BIENVENIDA Y POSTERIORMENTE A INGRESAR SUS DATOS.
           final route = MaterialPageRoute(
                     builder: (BuildContext context){
                       return WelcomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);

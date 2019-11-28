@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:servi_2/src/pages/addNuevoServicioPage2.dart';
+import 'package:servi_2/pages/addNuevoServicioPage2.dart';
 
 class AddNuevoServicioPage extends StatefulWidget {
   final String value;
