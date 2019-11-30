@@ -16,16 +16,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
+bool newUser = true;
 //VARIABLES QUE CONTENDRÁN LA INFORMACIÓN OBTENIDA DEL USUARIO
 String username, auxusername, name, email, idfb, foto;  
 final login = FacebookLogin();
-bool _isLoggedIn = false; 
-bool newUser = true;
 Map userProfile;
 
 void initiateFacebookLogin() async {
   final result = await login.logInWithReadPermissions(['email']);
+  newUser = true;
 
   switch (result.status) {
     case FacebookLoginStatus.error:
@@ -39,7 +38,6 @@ void initiateFacebookLogin() async {
     case FacebookLoginStatus.loggedIn:
       FacebookAccessToken myToken = result.accessToken;
 
-      ///assuming sucess in FacebookLoginStatus.loggedIn
       /// we use FacebookAuthProvider class to get a credential from accessToken
       /// this will return an AuthCredential object that we will use to auth in firebase
       AuthCredential credential= FacebookAuthProvider.getCredential(accessToken: myToken.token);
@@ -48,55 +46,21 @@ void initiateFacebookLogin() async {
       FirebaseUser firebaseUser = (
         await FirebaseAuth.instance.signInWithCredential(credential)
       ).user;
-      onLoginStatusChange();
-      getUserInfo(result);
-      print(idfb);
 
-      Firestore.instance
-          .collection('usuarios')
-          .where('idfb',isEqualTo: idfb)
-          .getDocuments()
-          .then((QuerySnapshot docs){
-            if(docs.documents.isNotEmpty){
-              newUser= false;
-            }
-          });
-
-      print(newUser);
-
-      if(foto == null){
-        initiateFacebookLogin();
-      }else{
-        if(newUser == true){ //SI ES VERDADERO, INICIA PÁGINA DE BIENVENIDA Y POSTERIORMENTE A INGRESAR SUS DATOS.
-          final route = MaterialPageRoute(
-                    builder: (BuildContext context){
-                      return WelcomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
-                    }); 
-          Navigator.push(context, route);
-          break;
-        }else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
-          final route = MaterialPageRoute(
-                        builder: (BuildContext context){
-                          return MyHomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
-                        }); 
-          Navigator.push(context, route);
-          break;
-        }
-      }
+      getUserInfo(result); //FUNCIÓN QUE OBTIENE LOS DATOS PUBLICOS DEL USUARIO DE FCBK (EMAIL, FOTO DE PERFIL, NOMBRE)
+      // Future.delayed(const Duration(seconds: 5), () {
+      //   ifNewUser(idfb);
+      // });
+      ifNewUser(idfb); // FUNCIÓN QUE CHECA EN LA BASE DE DATOS SI EL USUARIO YA ESTÁ REGISTRADO O ES NUEVO.
+      break;
+      
     }
-  
-}
-
-void onLoginStatusChange(){
-  setState(() {
-    _isLoggedIn = true;
-  });
 }
 
 void getUserInfo(FacebookLoginResult result) async{
   final token = result.accessToken.token;
   final graphResponse = await http.get(
-              'https://graph.facebook.com/v2.12/me?fields=name,first_name,last_name,email,picture&access_token=$token');
+              'https://graph.facebook.com/v2.12/me?fields=picture,name,first_name,last_name,email&access_token=$token');
   final profile = JSON.jsonDecode(graphResponse.body);
   userProfile = profile;
 
@@ -105,6 +69,51 @@ void getUserInfo(FacebookLoginResult result) async{
   idfb = userProfile['id'];
   foto = userProfile['picture']['data']['url'];
 }
+
+ifNewUser(String idfb) async {
+  
+  print(idfb);
+  print("Al iniciar = $newUser");
+  // if(foto == null){
+  //   initiateFacebookLogin();
+  // }
+  print("idfb Entrando a la función ifNewUser = $idfb");
+  print("newUser Entrando a la función ifNewUser = $newUser");
+
+
+  //QUERY PARA SABER SI EXISTE EL USUARIO QUE ESTÁ INGRESANDO, EN CASO CONTRARIO PROCEDER A SU REGISTRO COMO NUEVO USUARIO.
+  await Firestore.instance.collection('usuarios').getDocuments().then((QuerySnapshot snapshot){
+    snapshot.documents.forEach((f){
+      print("Entré al For Each");
+      print(idfb);
+      print(f.data['idfb']);
+      if(f.data['idfb'] ==  idfb){
+        print("Encontré que el usuario ya existe");
+        newUser = false;
+      }
+    });
+  });
+
+  print("Antes de entrar al if de ifnewUser = $newUser"); 
+
+  if(newUser == true){ //SI ES VERDADERO, INICIA PÁGINA DE BIENVENIDA Y POSTERIORMENTE A INGRESAR SUS DATOS.
+    final route = MaterialPageRoute(
+              builder: (BuildContext context){
+                return WelcomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
+              }); 
+              print('Ya entré a WelcomePage');
+    Navigator.push(context, route);
+  }else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
+    final route = MaterialPageRoute(
+                  builder: (BuildContext context){
+                    return MyHomePage(name: name, email: email, idfb: idfb, foto: foto, login: login);
+                  }); 
+                  print('Ya entré a HomePage');
+    Navigator.push(context, route);
+  }
+  
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -133,6 +142,7 @@ void getUserInfo(FacebookLoginResult result) async{
             textColor: Colors.white,
             onPressed: () {
               initiateFacebookLogin();
+              
             },
           )
         ],

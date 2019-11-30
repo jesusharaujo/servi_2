@@ -217,6 +217,16 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   //FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
   Widget _getPostsPerfil(){
 
+        // getDate(DateTime inputVal){
+        //   String processedDate;
+        //   processedDate = inputVal.year.toString() +
+        //   '-' +
+        //   inputVal.month.toString() +
+        //   '-' +
+        //   inputVal.day.toString();
+        //   return processedDate;
+        // }
+
       return StreamBuilder<QuerySnapshot>(
       stream: Firestore.instance.collection('usuarios').snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
