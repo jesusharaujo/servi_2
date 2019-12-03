@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:servi_2/main.dart';
 import 'package:servi_2/pages/listaContratistasPage.dart';
+import 'package:servi_2/pages/logingPage.dart';
 
 class BuscadorPage extends StatefulWidget {
   @override
@@ -12,29 +14,13 @@ class _BuscadorPageState extends State<BuscadorPage> {
   final login = FacebookLogin();
 
   Future<bool> _onBackPressed(){
-    return showDialog(
-      context: context,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text('¿Estás seguro?'),
-          content: Text('Usted saldrá de la aplicación'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('No'),
-              onPressed: (){
-                Navigator.of(context).pop(false);
-              },
-            ),
-            FlatButton(
-              child: Text('Sí'),
-              onPressed: (){
-                login.logOut();
-                Navigator.of(context).pop(true);
-              },
-            )
-          ],
-        );
-      },
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return MyHomePage();
+        }
+      )
     );
   }
 

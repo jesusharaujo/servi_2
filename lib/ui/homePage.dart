@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:servi_2/pages/logingPage.dart';
 
 
 class HomePage extends StatefulWidget {
@@ -34,7 +35,15 @@ class _HomePageState extends State<HomePage> {
               child: Text('Sí'),
               onPressed: (){
                 login.logOut();
-                Navigator.of(context).pop(true);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return LoginPage();
+                    }
+                  )
+                );
+                // Navigator.of(context).pop(true);
               },
             )
           ],

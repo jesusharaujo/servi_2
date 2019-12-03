@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/pages/addNuevoServicioPage.dart';
 import 'package:servi_2/pages/logingPage.dart';
+import '../main.dart';
 
 class MiPerfilPage extends StatefulWidget {
   
@@ -16,31 +17,16 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   final login = FacebookLogin();
 
   Future<bool> _onBackPressed(){
-    return showDialog(
-      context: context,
-      builder: (BuildContext context){
-        return AlertDialog(
-          title: Text('¿Estás seguro?'),
-          content: Text('Usted saldrá de la aplicación'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('No'),
-              onPressed: (){
-                Navigator.of(context).pop(false);
-              },
-            ),
-            FlatButton(
-              child: Text('Sí'),
-              onPressed: (){
-                login.logOut();
-                Navigator.of(context).pop(true);
-              },
-            )
-          ],
-        );
-      },
+    return Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) {
+          return MyHomePage();
+        }
+      )
     );
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

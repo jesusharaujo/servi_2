@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  final String name, email, idfb, foto;
+  final String name, email, uid, foto, username;
   final FacebookLogin login;
-  MyHomePage({Key key, this.name, this.email, this.idfb, this.foto, this.login}) : super(key: key);
+  MyHomePage({Key key, this.name, this.email, this.uid, this.foto, this.login, this.username}) : super(key: key);
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
