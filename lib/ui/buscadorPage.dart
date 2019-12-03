@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/main.dart';
 import 'package:servi_2/pages/listaContratistasPage.dart';
-import 'package:servi_2/pages/logingPage.dart';
 
 class BuscadorPage extends StatefulWidget {
   @override

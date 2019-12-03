@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:servi_2/pages/changeUserNamePage.dart';
 import 'package:servi_2/pages/welcomePage2.dart';
 
 class WelcomePage extends StatefulWidget {
-  final String name, email, uid, foto;
+  final String name, email, uid, foto, newUserName;
   final FacebookLogin login;
-  WelcomePage({Key key, this.name, this.email, this.uid, this.foto, this.login}) : super(key: key);
+  WelcomePage({Key key, this.name, this.email, this.uid, this.foto, this.login, this.newUserName}) : super(key: key);
 
   @override
   _WelcomePageState createState() => _WelcomePageState();
@@ -23,6 +24,10 @@ class _WelcomePageState extends State<WelcomePage> {
     }else{
       username = username + widget.email[x];
     }
+  }
+
+  if(widget.newUserName != null){
+    username = widget.newUserName;
   }
   
     return Scaffold(
@@ -71,7 +76,6 @@ class _WelcomePageState extends State<WelcomePage> {
                   builder: (BuildContext context){
                     return WelcomePage2(name: widget.name, email: widget.email, uid: widget.uid, foto: widget.foto, username: username);
                   }); 
-                 print('Ya entré a HomePage');
               Navigator.push(context, route);
             },
           ),
@@ -84,7 +88,13 @@ class _WelcomePageState extends State<WelcomePage> {
                 Text("Cambiar nombre de usuario", style: TextStyle(fontSize: 18.0),)
               ],
             ),
-            onPressed: (){},
+            onPressed: (){
+              final route = MaterialPageRoute(
+                  builder: (BuildContext context){
+                    return ChangeUserNamePage(name: widget.name, email: widget.email, uid: widget.uid, foto: widget.foto, username: username);
+                  }); 
+              Navigator.push(context, route);
+            },
           ),
 
           // SizedBox(height: 30.0),

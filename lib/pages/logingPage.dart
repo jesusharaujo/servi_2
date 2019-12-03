@@ -71,20 +71,18 @@ void initiateFacebookLogin() async {
 // }
 
 void ifNewUser(String uid) async {
-
-
   //QUERY PARA SABER SI EXISTE EL USUARIO QUE ESTÁ INGRESANDO, EN CASO CONTRARIO PROCEDER A SU REGISTRO COMO NUEVO USUARIO.
   await Firestore.instance.collection('usuarios').getDocuments().then((QuerySnapshot snapshot){
     snapshot.documents.forEach((doc){
       print("Entré al For Each");
       if(doc.data['uid'] ==  uid){
-        print("Encontré que el usuario ya existe");
+        // print("Encontré que el usuario ya existe");
         newUser = false;
       }
     });
   });
 
-  print("Antes de entrar al if de ifnewUser = $newUser"); 
+  // print("Antes de entrar al if de ifnewUser = $newUser"); 
 
   if(newUser == true){ //SI ES VERDADERO, INICIA PÁGINA DE BIENVENIDA Y POSTERIORMENTE A INGRESAR SUS DATOS.
     final route = MaterialPageRoute(
@@ -93,14 +91,15 @@ void ifNewUser(String uid) async {
               }); 
               print('Ya entré a WelcomePage');
     Navigator.push(context, route);
-  }else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
-    final route = MaterialPageRoute(
-                  builder: (BuildContext context){
-                    return MyHomePage(name: name, email: email, uid: uid, foto: foto, login: login);
-                  }); 
-                  print('Ya entré a HomePage');
-    Navigator.push(context, route);
   }
+  // else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
+  //   final route = MaterialPageRoute(
+  //                 builder: (BuildContext context){
+  //                   return MyHomePage(name: name, email: email, uid: uid, foto: foto, login: login);
+  //                 }); 
+  //                 print('Ya entré a HomePage');
+  //   Navigator.push(context, route);
+  // }
   
 }
 
@@ -129,7 +128,6 @@ void ifNewUser(String uid) async {
             textColor: Colors.white,
             onPressed: () {
               initiateFacebookLogin();
-              
             },
           )
         ],
