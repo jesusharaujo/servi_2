@@ -97,10 +97,8 @@ class _BuscadorPageState extends State<BuscadorPage> {
 
 
 class DataSearch extends SearchDelegate<String>{
-
   final String name, email, uid, foto, username;
   DataSearch({Key key, this.name, this.email, this.uid, this.foto, this.username});
-
   @override
   List<Widget> buildActions(BuildContext context) {
     //acciones para la barra de busqueda
@@ -141,12 +139,10 @@ class DataSearch extends SearchDelegate<String>{
       ),
       )
     );
-    
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    print(uid);
     //muestra cuando encuentra algo
     return StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('servicios').where('claves', arrayContains: query.toLowerCase()).snapshots(),
