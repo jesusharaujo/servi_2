@@ -12,6 +12,7 @@ class BuscadorPage extends StatefulWidget {
 }
 
 class _BuscadorPageState extends State<BuscadorPage> {
+  
   final login = FacebookLogin();
 
   Future<bool> _onBackPressed(){
@@ -19,7 +20,7 @@ class _BuscadorPageState extends State<BuscadorPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return MyHomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
+          return MyHomePage(uid: widget.uid, name: widget.name, email: widget.email, foto: widget.foto, username: widget.username);
         }
       )
     );
@@ -27,6 +28,11 @@ class _BuscadorPageState extends State<BuscadorPage> {
 
   @override
   Widget build(BuildContext context) {
+    // String uid = widget.uid;
+    // String name = widget.name;
+    // String email = widget.email;
+    // String foto = widget.foto;
+    // String username = widget.username;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -40,7 +46,7 @@ class _BuscadorPageState extends State<BuscadorPage> {
         ),
         actions: <Widget>[
           IconButton(icon: Icon(Icons.search, color: Colors.black), onPressed: (){
-            showSearch(context: context, delegate: DataSearch());
+            showSearch(context: context, delegate: DataSearch(uid: widget.uid, name: widget.name, email: widget.email, foto: widget.foto, username: widget.username));
           })
         ],
       ),
@@ -53,10 +59,7 @@ class _BuscadorPageState extends State<BuscadorPage> {
       )
     );
   }
-}
-
-Widget _listaServicios() {
-  
+  Widget _listaServicios() {
   return StreamBuilder<QuerySnapshot>(
     stream: Firestore.instance.collection('servicios').snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -72,7 +75,7 @@ Widget _listaServicios() {
                 onTap: (){
                   final route = MaterialPageRoute(
                     builder: (BuildContext context){
-                      return ListaContratistasPage(value: _nombreServicio);
+                      return ListaContratistasPage(nombreServicio: _nombreServicio, uid: widget.uid, name: widget.name, email: widget.email, foto: widget.foto, username: widget.username);
                     } ,
                   );
                   Navigator.push(context, route);
@@ -89,8 +92,14 @@ Widget _listaServicios() {
       },
   );
 }
+}
+
+
 
 class DataSearch extends SearchDelegate<String>{
+
+  final String name, email, uid, foto, username;
+  DataSearch({Key key, this.name, this.email, this.uid, this.foto, this.username});
 
   @override
   List<Widget> buildActions(BuildContext context) {
@@ -137,6 +146,7 @@ class DataSearch extends SearchDelegate<String>{
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    print(uid);
     //muestra cuando encuentra algo
     return StreamBuilder<QuerySnapshot>(
           stream: Firestore.instance.collection('servicios').where('claves', arrayContains: query.toLowerCase()).snapshots(),
@@ -155,7 +165,7 @@ class DataSearch extends SearchDelegate<String>{
                       onTap: (){
                         final route = MaterialPageRoute(
                           builder: (BuildContext context){
-                            return ListaContratistasPage(value: _nombreServicio);
+                            return ListaContratistasPage(nombreServicio: _nombreServicio, name: name, email: email, foto: foto, uid: uid, username: username);
                           } ,
                         );
                         Navigator.push(context, route);

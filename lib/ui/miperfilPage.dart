@@ -77,7 +77,6 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
               children: snapshot.data.documents.map((DocumentSnapshot document) {
                 return Row(
                     children: <Widget>[
-
                       Column(
                         children: <Widget>[
                           Container(
@@ -254,7 +253,6 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                               height: 350.0,
                               fit: BoxFit.cover,
                             ),
-                            
                             Column(
                               children: <Widget>[
                                 Row(
