@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:servi_2/pages/addNuevoServicioPage2.dart';
 
 class AddNuevoServicioPage extends StatefulWidget {
-  final String value;
+  final String name, email, uid, foto, username;
+  List listaServicios;
 
-  AddNuevoServicioPage({Key key, this.value}) : super(key: key);
+  AddNuevoServicioPage({Key key, this.listaServicios, this.uid, this.username, this.foto, this.email, this.name}) : super(key: key);
 
   @override
   _AddNuevoServicioPageState createState() => _AddNuevoServicioPageState();
 }
 
 class _AddNuevoServicioPageState extends State<AddNuevoServicioPage> {
+
+  // List listaServicios; //VARIABLE QUE CONTENDRÁ LOS SERVICIOS ACTUALES DEL USUARIO, PARA PODER AGREGARLE UNO NUEVO.
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +46,7 @@ Widget _getServiciosPerfil() {
     return Container(
       padding: EdgeInsets.only(top:20.0),
       child: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.value).snapshots(),
+        stream: Firestore.instance.collection('usuarios').where('uid', isEqualTo: widget.uid).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError)
             return new Text('Error: ${snapshot.error}');
@@ -50,23 +55,25 @@ Widget _getServiciosPerfil() {
             default:
               return new Column(
                 children: snapshot.data.documents.map((DocumentSnapshot document) {
-
+                  // listaServicios = document['servicios']; // AGREGA LOS SERVICIOS ACTUALES A LA VARIABLE LISTASERVICIOS
                   // CICLO PARA IMPRIMIR LOS SERVICIOS QUE TIENE DISPONIBLES EL USUARIO
-                String _servicios = ""; // VARIABLE QUE CONTIENE EL STRING CON LOS SERVICIOS QUE SE SACARÁN DEL ARRAY
-    
-                if (document['servicios'].length == 0){
-                  _servicios = "Aún no prestas ningún servicio...";
-                }else{
-                  for (var i = 0; i < document['servicios'].length; i++) {
-                    if((i+1) == document['servicios'].length){
-                      _servicios = _servicios + " y " + document['servicios'][i] + ".";
-                    }else if((i+2) == document['servicios'].length){
-                      _servicios = _servicios + document['servicios'][i] ;
-                    }else{
-                      _servicios = _servicios + document['servicios'][i] + ", ";
+                  String _servicios = ""; // VARIABLE QUE CONTIENE EL STRING CON LOS SERVICIOS QUE SE SACARÁN DEL ARRAY
+                  if (document['servicios'].length == 0){
+                    _servicios = "Aún no presta ningún servicio...";
+                  }else if(document['servicios'].length == 1){
+                    _servicios = document['servicios'][0] + '.'; 
+                  }
+                  else{
+                    for (var i = 0; i < document['servicios'].length; i++) {
+                      if((i+1) == document['servicios'].length){
+                        _servicios = _servicios + " y " + document['servicios'][i] + ".";
+                      }else if((i+2) == document['servicios'].length){
+                        _servicios = _servicios + document['servicios'][i] ;
+                      }else{
+                        _servicios = _servicios + document['servicios'][i] + ", ";
+                      }
                     }
                   }
-                }
                 return new Column(
                     children: <Widget>[
                       CircleAvatar(
@@ -110,37 +117,65 @@ Widget _getListaServicios(){
         default:
           return new Column(
             children : snapshot.data.documents.map((DocumentSnapshot document) {
-              String _servicioName = document['nombre'];
-              String _userName = widget.value;
-              return Card(
-                elevation: 5.0,
-                child: Container(
-                  margin: EdgeInsets.all(20.0),
-                  child: Column(
-                    children: <Widget>[
-                      ListTile(
-                        onTap: (){
-                          final route = MaterialPageRoute(
-                            builder: (BuildContext context){
-                              return AddNuevoServicioPage2(servicioName: _servicioName, userName: _userName);
-                            } ,
-                          );
-                          Navigator.push(context, route);
-                        },
-                        leading: Image(image: NetworkImage(document['foto_servicio']),fit: BoxFit.cover),
-                        title: Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
-                        subtitle: Text(document['descripcion']),
-                        trailing: Column(
-                          children: <Widget>[
-                            Icon(Icons.add, color: Colors.green, size: 30.0),
-                            Text('Agregar', style: TextStyle(fontSize: 20.0, color: Colors.green))
-                          ],
-                        )
-                      ),
-                    ],
+              
+              String docId = document.documentID;
+              int cantidadServicio = document['cantidad'];
+              String nombreServicio = document['nombre'];
+              //ESTE IF ES PARA VER SI EL SERVICIO YA LO TIENE ACTIVO EL USUARIO Y QUE APAREZCA CON EL STATUS "EN SERVICIO"
+              if(widget.listaServicios.contains(document['nombre'])){
+                return Card(
+                  elevation: 5.0,
+                  child: Container(
+                    margin: EdgeInsets.all(20.0),
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          leading: Image(image: NetworkImage(document['foto_servicio']),fit: BoxFit.cover),
+                          title: Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
+                          subtitle: Text(document['descripcion']),
+                          trailing: Column(
+                            children: <Widget>[
+                              Icon(FontAwesomeIcons.checkCircle, color: Colors.blue, size: 30.0),
+                              Text('En servicio', style: TextStyle(fontSize: 20.0, color: Colors.blue))
+                            ],
+                          )
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );  
+                ); 
+              }
+              else{
+                return Card(
+                  elevation: 5.0,
+                  child: Container(
+                    margin: EdgeInsets.all(20.0),
+                    child: Column(
+                      children: <Widget>[
+                        ListTile(
+                          onTap: (){
+                            final route = MaterialPageRoute(
+                              builder: (BuildContext context){
+                                return AddNuevoServicioPage2(cantidadServicio: cantidadServicio, listaServicios: widget.listaServicios,docId: docId, nombreServicio: nombreServicio, name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
+                              } ,
+                            );
+                            Navigator.push(context, route);
+                          },
+                          leading: Image(image: NetworkImage(document['foto_servicio']),fit: BoxFit.cover),
+                          title: Text(document['nombre'], style: TextStyle(fontSize: 20.0)),
+                          subtitle: Text(document['descripcion']),
+                          trailing: Column(
+                            children: <Widget>[
+                              Icon(Icons.add, color: Colors.green, size: 30.0),
+                              Text('Agregar', style: TextStyle(fontSize: 20.0, color: Colors.green))
+                            ],
+                          )
+                        ),
+                      ],
+                    ),
+                  ),
+                ); 
+              }
             }).toList(),
           );
       }

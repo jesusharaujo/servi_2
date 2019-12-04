@@ -6,8 +6,10 @@ import 'package:servi_2/pages/logingPage.dart';
 import '../main.dart';
 
 class MiPerfilPage extends StatefulWidget {
+
+  final String name, email, uid, foto, username;
   
-  MiPerfilPage({Key key}) : super(key: key);
+  MiPerfilPage({Key key, this.uid, this.username, this.foto, this.email, this.name}) : super(key: key);
 
   @override
   _MiPerfilPageState createState() => _MiPerfilPageState();
@@ -15,13 +17,13 @@ class MiPerfilPage extends StatefulWidget {
 
 class _MiPerfilPageState extends State<MiPerfilPage> {
   final login = FacebookLogin();
-
+  List listaServicios;
   Future<bool> _onBackPressed(){
     return Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) {
-          return MyHomePage();
+          return MyHomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
         }
       )
     );
@@ -31,6 +33,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(
@@ -63,7 +66,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   Widget _getStats() {
 
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('usuarios').snapshots(),
+      stream: Firestore.instance.collection('usuarios').where('uid',isEqualTo: widget.uid).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');
@@ -142,7 +145,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   //FUNCIÓN QUE CARGA LOS DATOS PERSONALES DEL USUARIO
   Widget _getDatosPerfil() {
     return StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('usuarios').snapshots(),
+        stream: Firestore.instance.collection('usuarios').where('uid',isEqualTo: widget.uid).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError)
             return new Text('Error: ${snapshot.error}');
@@ -184,7 +187,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(document['nombre'].toString(), style: TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold)),
-                            Text(document['direccion']['ciudad'].toString()),
+                            Text(document['ciudad'].toString()),
                             Container(constraints: BoxConstraints(maxWidth: 350.0),child:Text('Servicios: $_servicios', )),
                             Text("Email: $_email"),
                             Text("Teléfono: $_telefono"),
@@ -200,21 +203,10 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
       );
   }
 
-  //FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
+  // FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
   Widget _getPostsPerfil(){
-
-        // getDate(DateTime inputVal){
-        //   String processedDate;
-        //   processedDate = inputVal.year.toString() +
-        //   '-' +
-        //   inputVal.month.toString() +
-        //   '-' +
-        //   inputVal.day.toString();
-        //   return processedDate;
-        // }
-
       return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('usuarios').snapshots(),
+      stream: Firestore.instance.collection('posts').where('username_tag',isEqualTo: widget.username).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');
@@ -223,13 +215,8 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
           default:
             return new Column(
               children: snapshot.data.documents.map((DocumentSnapshot document) {
-                
-                List<Widget> lista = List<Widget>();
-
-                for (var i = 0; i < document['publicaciones'].length; i++) {
-                  final _fecha = document['publicaciones'][i]['fecha'].toDate();
-                  lista.add(
-                    Container(
+                final _fecha = document['fecha'].toDate();
+                    return Container(
                       padding: EdgeInsets.only(bottom: 20.0),
                       child: Card(
                         elevation: 8.0,
@@ -242,27 +229,27 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                                   padding: EdgeInsets.all(7.0),
                                   child: CircleAvatar(
                                     radius: 15.0,
-                                    backgroundImage: NetworkImage(document['img_perfil']),
+                                    backgroundImage: NetworkImage(document['img_user']),
                                     )
                                 ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: <Widget>[
                                     Container(
-                                      child: Text(document['publicaciones'][i]['username_post'], style: TextStyle(fontWeight: FontWeight.bold),),
+                                      child: Text(document['username_post'], style: TextStyle(fontWeight: FontWeight.bold),),
                                     ),
                                     Container(
                                       padding: EdgeInsets.all(1.0),
-                                      child: Text(document['publicaciones'][i]['ciudad_user'],style: TextStyle(fontSize: 10.0),),
+                                      child: Text(document['ciudad_user'],style: TextStyle(fontSize: 10.0),),
                                     ),
                                   ],
                                 )
                               ],
                             ),
                             FadeInImage(
-                              image: NetworkImage(document['publicaciones'][i]['post']),
+                              image: NetworkImage(document['img_post']),
                               placeholder: AssetImage('lib/src/assets/loader.gif'),
-                              fadeInDuration: Duration(milliseconds: 150),
+                              fadeInDuration: Duration(seconds: 1),
                               width: 400.0,
                               height: 350.0,
                               fit: BoxFit.cover,
@@ -274,7 +261,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                                   children: <Widget>[
                                     Container(
                                       padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
-                                      child: Text(document['publicaciones'][i]['stars'].toString(),style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 15.0),),
+                                      child: Text(document['stars'].toString(),style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 15.0),),
                                     ),
                                     Container(
                                       padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
@@ -295,12 +282,85 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                           ],
                         ),
                       ),
-                    )
-                  );
-                }
-                return Column(
-                  children: lista 
-                );
+                    );
+                
+                // List<Widget> lista = List<Widget>();
+
+                // for (var i = 0; i < document['publicaciones'].length; i++) {
+                //   final _fecha = document['publicaciones'][i]['fecha'].toDate();
+                //   lista.add(
+                //     Container(
+                //       padding: EdgeInsets.only(bottom: 20.0),
+                //       child: Card(
+                //         elevation: 8.0,
+                //         child: Column(
+                //           crossAxisAlignment: CrossAxisAlignment.stretch,
+                //           children: <Widget>[
+                //             Row(
+                //               children: <Widget>[
+                //                 Container(
+                //                   padding: EdgeInsets.all(7.0),
+                //                   child: CircleAvatar(
+                //                     radius: 15.0,
+                //                     backgroundImage: NetworkImage(document['img_perfil']),
+                //                     )
+                //                 ),
+                //                 Column(
+                //                   crossAxisAlignment: CrossAxisAlignment.start,
+                //                   children: <Widget>[
+                //                     Container(
+                //                       child: Text(document['publicaciones'][i]['username_post'], style: TextStyle(fontWeight: FontWeight.bold),),
+                //                     ),
+                //                     Container(
+                //                       padding: EdgeInsets.all(1.0),
+                //                       child: Text(document['publicaciones'][i]['ciudad_user'],style: TextStyle(fontSize: 10.0),),
+                //                     ),
+                //                   ],
+                //                 )
+                //               ],
+                //             ),
+                //             FadeInImage(
+                //               image: NetworkImage(document['publicaciones'][i]['post']),
+                //               placeholder: AssetImage('lib/src/assets/loader.gif'),
+                //               fadeInDuration: Duration(milliseconds: 150),
+                //               width: 400.0,
+                //               height: 350.0,
+                //               fit: BoxFit.cover,
+                //             ),
+                            
+                //             Column(
+                //               children: <Widget>[
+                //                 Row(
+                //                   children: <Widget>[
+                //                     Container(
+                //                       padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
+                //                       child: Text(document['publicaciones'][i]['stars'].toString(),style: TextStyle(color: Colors.green,fontWeight: FontWeight.bold,fontSize: 15.0),),
+                //                     ),
+                //                     Container(
+                //                       padding: EdgeInsets.only(left: 10.0,bottom: 10.0,top: 10.0),
+                //                       child: Text("Estrellas",style: TextStyle(fontSize: 15.0),),
+                //                     ),
+                //                     Container(
+                //                       padding: EdgeInsets.only(left: 100.0,bottom: 10.0,top: 10.0),
+                //                       child: Text("Fecha: ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15.0))
+                //                     ),
+                //                     Container(
+                //                       padding: EdgeInsets.only(left: 3.0,bottom: 10.0,top: 10.0),
+                //                       child: Text("$_fecha")
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ],
+                //             )
+                //           ],
+                //         ),
+                //       ),
+                //     )
+                //   );
+                // }
+                // return Column(
+                //   children: lista 
+                // );
               }).toList(),
             );
         }
@@ -310,7 +370,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
 
   Widget _getEndDrawer() {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('usuarios').snapshots(),
+      stream: Firestore.instance.collection('usuarios').where('uid',isEqualTo: widget.uid).snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');
@@ -319,7 +379,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
           default:
             return new Column(
               children: snapshot.data.documents.map((DocumentSnapshot document) {
-                String _userName = document['username'];
+                listaServicios = document['servicios']; // AGREGA LOS SERVICIOS ACTUALES A LA VARIABLE LISTASERVICIOS
                 return Column(
                   children: <Widget>[
                     SizedBox(
@@ -336,13 +396,13 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                       onTap: (){
                         final route = MaterialPageRoute(
                           builder: (BuildContext context){
-                            return AddNuevoServicioPage(value: _userName);
+                            return AddNuevoServicioPage(listaServicios: listaServicios,name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
                           } ,
                         );
                         Navigator.push(context, route);
                       },
                       leading: Icon(Icons.monetization_on, color: Colors.green),
-                      title: Text('Agregar un nuevo servicio', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
+                      title: Text('Prestar un nuevo servicio', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
                     ),
                     ListTile(
                       leading: Icon(Icons.history, color: Colors.blue),
@@ -352,6 +412,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
                       leading: Icon(Icons.settings, color: Colors.grey),
                       title: Text('Administrar mis servicios', style: TextStyle(fontSize: 17.0, fontWeight: FontWeight.w300),),
                     ),
+                    Divider(),
                     ListTile(
                       onTap: (){
                         login.logOut();

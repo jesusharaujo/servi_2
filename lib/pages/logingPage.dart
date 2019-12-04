@@ -45,16 +45,17 @@ void initiateFacebookLogin() async {
         await FirebaseAuth.instance.signInWithCredential(credential)
       ).user;
 
+
       // uid será el id del usuario, éste fue generado por firebase.
       uid = firebaseUser.uid;
       foto = firebaseUser.photoUrl;
       name = firebaseUser.displayName;
       email = firebaseUser.email;
 
-      print('uid: '+ uid);
-      print('foto: '+ foto);
-      print('nombre: '+ name);
-      print('email: '+ email);
+      // print('uid: '+ uid);
+      // print('foto: '+ foto);
+      // print('nombre: '+ name);
+      // print('email: '+ email);
       // getUserInfo(result); //FUNCIÓN QUE OBTIENE LOS DATOS PUBLICOS DEL USUARIO DE FCBK (EMAIL, FOTO DE PERFIL, NOMBRE)
       ifNewUser(uid); // FUNCIÓN QUE CHECA EN LA BASE DE DATOS SI EL USUARIO YA ESTÁ REGISTRADO O ES NUEVO.
       break;
@@ -74,7 +75,6 @@ void ifNewUser(String uid) async {
   //QUERY PARA SABER SI EXISTE EL USUARIO QUE ESTÁ INGRESANDO, EN CASO CONTRARIO PROCEDER A SU REGISTRO COMO NUEVO USUARIO.
   await Firestore.instance.collection('usuarios').getDocuments().then((QuerySnapshot snapshot){
     snapshot.documents.forEach((doc){
-      print("Entré al For Each");
       if(doc.data['uid'] ==  uid){
         // print("Encontré que el usuario ya existe");
         newUser = false;
@@ -89,17 +89,15 @@ void ifNewUser(String uid) async {
               builder: (BuildContext context){
                 return WelcomePage(name: name, email: email, uid: uid, foto: foto, login: login);
               }); 
-              print('Ya entré a WelcomePage');
     Navigator.push(context, route);
   }
-  // else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
-  //   final route = MaterialPageRoute(
-  //                 builder: (BuildContext context){
-  //                   return MyHomePage(name: name, email: email, uid: uid, foto: foto, login: login);
-  //                 }); 
-  //                 print('Ya entré a HomePage');
-  //   Navigator.push(context, route);
-  // }
+  else{ //CASO CONTRARIO, QUE INGRESE A LA PÁGINA PRINCIPAL
+    final route = MaterialPageRoute(
+                  builder: (BuildContext context){
+                    return MyHomePage(name: name, email: email, uid: uid, foto: foto, login: login);
+                  }); 
+    Navigator.push(context, route);
+  }
   
 }
 

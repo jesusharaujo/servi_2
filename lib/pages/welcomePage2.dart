@@ -77,7 +77,7 @@ class _WelcomePage2State extends State<WelcomePage2> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) {
-                                      return MyHomePage();
+                                      return MyHomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
                                     }
                                   )
                                 );
@@ -112,6 +112,7 @@ class _WelcomePage2State extends State<WelcomePage2> {
   // }
 
   void crearNuevoUsuario() {
+    List servicios = [];
     DocumentReference ref = Firestore.instance.collection('usuarios').document(widget.uid);
       ref.setData({
         "uid": widget.uid,
@@ -126,6 +127,12 @@ class _WelcomePage2State extends State<WelcomePage2> {
         "telefono": telefono,
         "total_servicios": 0,
         "username": widget.username,
+        "servicios": servicios,
+        "calle": calle,
+        "num_casa": numCasa,
+        "colonia": colonia,
+        "ciudad": ciudad,
+        "estado": estado,
       }, merge: true
     );
 

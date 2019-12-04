@@ -19,7 +19,6 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
 class MyHomePage extends StatefulWidget {
   final String name, email, uid, foto, username;
   final FacebookLogin login;
@@ -29,14 +28,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<Widget> pages = [
-    HomePage(),
-    BuscadorPage(),
-    MiPerfilPage()
-  ];
-
   @override
   Widget build(BuildContext context) {
+
+    List<Widget> pages = [
+    HomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username),
+    BuscadorPage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username),
+    MiPerfilPage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username)
+    ];
+
     return DefaultTabController(
       length: 3,
       initialIndex: 0,
@@ -53,7 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.search)
             ),
             Tab(
-              icon: Icon(Icons.person)
+              icon: Icon(Icons.person),
             ),
           ],
           unselectedLabelColor: Colors.black,

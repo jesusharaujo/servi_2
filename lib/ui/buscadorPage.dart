@@ -5,6 +5,8 @@ import 'package:servi_2/main.dart';
 import 'package:servi_2/pages/listaContratistasPage.dart';
 
 class BuscadorPage extends StatefulWidget {
+  final String name, email, uid, foto, username;
+  BuscadorPage({Key key, this.name, this.email, this.uid, this.foto, this.username}) : super(key: key);
   @override
   _BuscadorPageState createState() => _BuscadorPageState();
 }
@@ -17,7 +19,7 @@ class _BuscadorPageState extends State<BuscadorPage> {
       context,
       MaterialPageRoute(
         builder: (context) {
-          return MyHomePage();
+          return MyHomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
         }
       )
     );
@@ -27,6 +29,7 @@ class _BuscadorPageState extends State<BuscadorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         centerTitle: true,
         backgroundColor: Colors.white,
         title: Text(

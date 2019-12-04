@@ -3,11 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:servi_2/pages/logingPage.dart';
 
-
 class HomePage extends StatefulWidget {
-  final String name, email, idfb, foto;
+  final String name, email, idfb, foto, uid, username;
   final FacebookLogin login;
-  HomePage({Key key, this.name, this.email, this.idfb, this.foto, this.login}) : super(key: key);
+  HomePage({Key key, this.name, this.email, this.idfb, this.foto, this.login, this.uid, this.username}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -54,16 +53,19 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false, //desactiva barra de retroceso automatico.
         centerTitle: true,
         backgroundColor: Colors.white,
-        title: Text(
-          'Servicios Recientes',
-          style: TextStyle(
-            color:Colors.black,
-          )
-        ),
+        title: Image.asset('lib/src/assets/logo.png'),
+        // Text(
+        //   'Servicios Recientes',
+        //   style: TextStyle(
+        //     color:Colors.black,
+        //   )
+        // ),
       ),
       body: WillPopScope(
         onWillPop: _onBackPressed,

@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:servi_2/main.dart';
+import 'package:servi_2/ui/miperfilPage.dart';
 
 class AddNuevoServicioPage2 extends StatefulWidget {
-  final String servicioName;
-  final String userName;
+  final String docId, nombreServicio, name, email, uid, foto, username;
+  List listaServicios;
+  int cantidadServicio;
 
-  AddNuevoServicioPage2({Key key,this.servicioName ,this.userName}) : super(key: key);
-
+  AddNuevoServicioPage2({Key key,this.cantidadServicio, this.listaServicios, this.docId, this.nombreServicio, this.uid, this.username, this.foto, this.email, this.name}) : super(key: key);
+  
   @override
   _AddNuevoServicioPage2State createState() => _AddNuevoServicioPage2State();
 }
 
 class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
+  
   @override
   Widget build(BuildContext context) {
+    widget.cantidadServicio = widget.cantidadServicio + 1;
+    widget.listaServicios = widget.listaServicios + [widget.nombreServicio]; // ESTA VARIABLE CONTIENE LOS ACTUALES SERVICIOS Y EL QUE SE VA A AGREGAR.
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -41,7 +47,7 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
     return Container(
       padding: EdgeInsets.only(top:20.0),
       child: StreamBuilder<QuerySnapshot>(
-        stream: Firestore.instance.collection('usuarios').where('username', isEqualTo: widget.userName).snapshots(),
+        stream: Firestore.instance.collection('usuarios').where('uid', isEqualTo: widget.uid).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError)
             return new Text('Error: ${snapshot.error}');
@@ -50,23 +56,26 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
             default:
               return new Column(
                 children: snapshot.data.documents.map((DocumentSnapshot document) {
-
+                  
                   // CICLO PARA IMPRIMIR LOS SERVICIOS QUE TIENE DISPONIBLES EL USUARIO
-                String _servicios = ""; // VARIABLE QUE CONTIENE EL STRING CON LOS SERVICIOS QUE SE SACARÁN DEL ARRAY
-    
-                if (document['servicios'].length == 0){
-                  _servicios = "Aún no prestas ningún servicio...";
-                }else{
-                  for (var i = 0; i < document['servicios'].length; i++) {
-                    if((i+1) == document['servicios'].length){
-                      _servicios = _servicios + " y " + document['servicios'][i] + ".";
-                    }else if((i+2) == document['servicios'].length){
-                      _servicios = _servicios + document['servicios'][i] ;
-                    }else{
-                      _servicios = _servicios + document['servicios'][i] + ", ";
+                  String _servicios = ""; // VARIABLE QUE CONTIENE EL STRING CON LOS SERVICIOS QUE SE SACARÁN DEL ARRAY
+      
+                  if (document['servicios'].length == 0){
+                    _servicios = "Aún no presta ningún servicio...";
+                  }else if(document['servicios'].length == 1){
+                    _servicios = document['servicios'][0] + '.'; 
+                  }
+                  else{
+                    for (var i = 0; i < document['servicios'].length; i++) {
+                      if((i+1) == document['servicios'].length){
+                        _servicios = _servicios + " y " + document['servicios'][i] + ".";
+                      }else if((i+2) == document['servicios'].length){
+                        _servicios = _servicios + document['servicios'][i] ;
+                      }else{
+                        _servicios = _servicios + document['servicios'][i] + ", ";
+                      }
                     }
                   }
-                }
                 return new Column(
                     children: <Widget>[
                       CircleAvatar(
@@ -101,7 +110,7 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
 
   Widget _getServicioSeleccionado(){
   return StreamBuilder<QuerySnapshot>(
-    stream: Firestore.instance.collection('servicios').where('nombre', isEqualTo: widget.servicioName).snapshots(),
+    stream: Firestore.instance.collection('servicios').where('nombre', isEqualTo: widget.nombreServicio).snapshots(),
     builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
       if (snapshot.hasError)
         return new Text('Error: ${snapshot.error}');
@@ -110,6 +119,7 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
         default:
           return new Column(
             children : snapshot.data.documents.map((DocumentSnapshot document) {
+              
               return Column(
                 children: <Widget>[
                   Card(
@@ -146,14 +156,45 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
                       ),
                       SizedBox(width: 20.0),
                       RaisedButton(
-                        onPressed: () {
-                        },
                         textColor: Colors.white,
                         color: Colors.green,
                         child: Container(
                           padding: const EdgeInsets.all(10.0),
                           child: const Text('Confirmar',style: TextStyle(fontSize: 20)),
                         ),
+                        onPressed: () {
+                          addNuevoServicio(widget.listaServicios, widget.docId, widget.cantidadServicio);
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) {
+                              return AlertDialog(
+                                  title: Text('Servicio agregado correctamente.'),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Icon(Icons.check_circle, color: Colors.green, size: 60.0,)
+                                    ],
+                                  ),
+                                  actions: <Widget>[
+                                    FlatButton(
+                                      child: Text('Aceptar'),
+                                      onPressed: (){
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return MyHomePage(name: widget.name, email: widget.email, foto: widget.foto, uid: widget.uid, username: widget.username);
+                                    }
+                                  )
+                                );
+                              }
+                            )
+                        ],
+                    );
+                  }
+                );
+                        },
                       ),
                     ],
                   ),
@@ -165,5 +206,18 @@ class _AddNuevoServicioPage2State extends State<AddNuevoServicioPage2> {
     },
   );
 }
+
+  void addNuevoServicio(List listaServicios, String docId, int cantidadServicio) {
+
+    Firestore.instance.collection('usuarios').document(widget.uid).
+      updateData({
+        "servicios": listaServicios
+      });
+
+    Firestore.instance.collection('servicios').document(docId).
+      updateData({
+        "cantidad": cantidadServicio
+      });
+  }
 
 }
