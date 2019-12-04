@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
 // FUNCIÓN QUE REGRESA TODOS LOS POSTS
 Widget _getPosts(){
   return StreamBuilder<QuerySnapshot>(
-          stream: Firestore.instance.collection('posts').snapshots(),
+          stream: Firestore.instance.collection('posts').orderBy("fecha").snapshots(),
           builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasError)
               return new Text('Error: ${snapshot.error}');

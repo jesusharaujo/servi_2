@@ -66,7 +66,7 @@ class _MiPerfilPage2State extends State<MiPerfilPage2> {
           default:
             return new Column(
               children: snapshot.data.documents.map((DocumentSnapshot document) {
-                return Row(
+                  return Row(
                     children: <Widget>[
 
                       Column(
@@ -93,7 +93,6 @@ class _MiPerfilPage2State extends State<MiPerfilPage2> {
                           )
                         ],
                       ),
-
                       Container(
                         padding: EdgeInsets.only(left: 30.0),
                         child: Column(
@@ -197,7 +196,7 @@ class _MiPerfilPage2State extends State<MiPerfilPage2> {
   // FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
   Widget _getPostsPerfil(){
       return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('posts').where('username_tag',isEqualTo: widget.username).snapshots(),
+      stream: Firestore.instance.collection('posts').where('username_tag',isEqualTo: widget.username).orderBy("fecha").snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');
@@ -206,7 +205,8 @@ class _MiPerfilPage2State extends State<MiPerfilPage2> {
           default:
             return new Column(
               children: snapshot.data.documents.map((DocumentSnapshot document) {
-                final _fecha = document['fecha'].toDate();
+                if(document.exists){
+                  final _fecha = document['fecha'].toDate();
                     return Container(
                       padding: EdgeInsets.only(bottom: 20.0),
                       child: Card(
@@ -273,6 +273,11 @@ class _MiPerfilPage2State extends State<MiPerfilPage2> {
                         ),
                       ),
                     );
+                }
+                else{
+                  return Text('Aún sin publicaciones');
+                }
+                
               }).toList(),
             );
         }

@@ -205,7 +205,7 @@ class _MiPerfilPageState extends State<MiPerfilPage> {
   // FUNCIÓN QUE CARGA LOS POSTS DEL MURO DEL USUARIO
   Widget _getPostsPerfil(){
       return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('posts').where('username_tag',isEqualTo: widget.username).snapshots(),
+      stream: Firestore.instance.collection('posts').where('username_tag',isEqualTo: widget.username).orderBy("fecha").snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError)
           return new Text('Error: ${snapshot.error}');
